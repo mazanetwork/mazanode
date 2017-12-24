@@ -5,12 +5,10 @@ RUN apk --no-cache --virtual builddeps add git python py-pip make gcc g++ krb5-d
 
 COPY iquidus-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh \
-     && mkdir /app \
-     && cd /app \
-     && git clone https://github.com/owlhooter/explorer \
-     && cd explorer \
+     && git clone https://github.com/owlhooter/explorer app \
+     && cd app \
      && npm install --production
 
-COPY iquidus-settings.json /app/explorer/settings.json
+COPY iquidus-settings.json /app/settings.json
 
 ENTRYPOINT [ "/entrypoint.sh" ]
