@@ -1,0 +1,16 @@
+FROM node:9.2-alpine
+
+# Build deps
+RUN apk --no-cache --virtual builddeps add git python py-pip make gcc g++ krb5-dev
+
+COPY iquidus-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+     && mkdir /app \
+     && cd /app \
+     && git clone https://github.com/owlhooter/explorer \
+     && cd explorer \
+     && npm install --production
+
+COPY iquidus-settings.json /app/explorer/settings.json
+
+ENTRYPOINT [ "/entrypoint.sh" ]

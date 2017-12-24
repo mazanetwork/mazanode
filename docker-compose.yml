@@ -1,0 +1,93 @@
+version: "3"
+services:
+  iquidus:
+    build:
+      context: ./iquidus
+      dockerfile: Dockerfile.iquidus
+    image: doc.guruvan.net/guruvan/iquidus:latest
+    env_file:
+       - ./iquidus/iquidus.env
+       - ./mongodb/mongodb.env
+       - ./mazad/mazad.env
+    volumes:
+       - ./iquidus/settings.json:/app/settings.json
+    ports:
+      - 3001:3001
+    depends_on: 
+      - mongodb
+      - mazad
+    links:
+      - mongodb:mongodb
+      - mazad:mazad 
+  mongodb:
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile.mongodb
+    env_file:
+      - ./mongodb/mongodb.env
+    image: doc.guruvan.net/guruvan/mongodb:latest
+    links:
+      - mazad:mazad 
+    volumes:
+      - ./mongodb-data:/data
+      - ./mongodb/mongod.conf:/etc/mongod.conf
+  mazad:
+    image: doc.guruvan.net/guruvan/mazad:latest
+    volumes:
+      - ./mazad/.maza:/home/maza/.maza
+    ports:
+      - 12835:12835
+      - 12832:12832
+    command:
+      - "-conf=/home/maza/.maza/maza.conf"
+  tateserver:
+    image: doc.guruvan.net/guruvan/tateserver:latest
+    depends_on:
+      - mazad
+    ports:
+      - 50001:50001
+      - 50002:50002
+    volumes:
+      - ./mazad/.maza:/home/maza/.maza
+      - ./tateserver/tateserver.env:/app/tateserver.env
+      - ./tateserver/tate-server:/var/tate-server
+      - ./letsencrypt/archive/dev_mazacoin_org:/app/certs
+    links:
+      - mazad:mazad
+    env_file:
+     - ./tateserver/tateserver.env
+     - ./mazad/mazad.env
+
+  ipfs:
+    restart: always
+    image: ipfs/go-ipfs
+    volumes:
+      - ./ipfs/repo:/data/ipfs
+      - ./mazacoin.org/_site:/data/mazacoin_org_site
+      - ./mazacoin.org/_site:/data/mazacoin_org_src
+      - ./tateserver/tate-server:/data/tateserver
+      - ./mazad/.maza:/data/mazad
+      - ./mongodb-data:/data/iquidus-mongodb
+      - ./tarballs:/data/tarballs
+    ports:
+      - 4001:4001
+      - 8000:8080
+      - 8001:5001
+    command:
+      - "--enable-pubsub-experiment"
+  webserver:
+    restart: always
+    image: nginx:stable-alpine
+    volumes:
+      - ./webserver/nginx:/etc/nginx
+      - ./letsencrypt:/etc/letsencrypt
+      - ./webserver/nginx/ssl:/etc/nginx/ssl
+      - ./mazacoin.org/_site:/var/www/mazacoin.org/_site
+    ports:
+      - 80:80
+      - 443:443
+    links: 
+      - mazad:mazad
+      - iquidus:iquidus
+      - ipfs:ipfs
+      - tateserver:tateserver

@@ -1,0 +1,15 @@
+version: "3"
+services:
+  mazad:
+    restart: always
+    image: guruvan/mazad:latest
+    volumes:
+      - /home/guruvan/maza_network/mazad/.maza:/home/maza/.maza
+    ports:
+      - 12835:12835
+      - 12832:12832
+    command:
+      - "-conf=/home/maza/.maza/maza.conf"
+
+
+  

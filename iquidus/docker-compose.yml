@@ -1,0 +1,37 @@
+version: "3"
+services:
+  iquidus:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: guruvan/iquidus:latest
+    restart: always
+    env_file:
+       - ./iquidus.env
+       - ./mongodb.env
+    ports:
+      - 3001:3001
+    depends_on: 
+      - mongodb
+    links:
+      - mongodb:mongodb
+    external_links:
+      - mazad_mazad_1:mazad 
+    networks: 
+      - mazad_default
+  mongodb:
+    build:
+      context: ./
+      dockerfile: Dockerfile.mongodb
+    env_file:
+      - ./mongodb.env
+    image: guruvan/mongodb:latest
+    restart: always
+    external_links:
+      - mazad_mazad_1:mazad 
+    networks: 
+      - mazad_default
+    volumes:
+      - ./mongodb-data:/data
+
+    
