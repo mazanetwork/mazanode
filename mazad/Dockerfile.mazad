@@ -1,4 +1,4 @@
-FROM guruvan/coind-openssl-base:0.10-a3 as mazabuilder
+FROM maza/mazanode-coind:openssl-base  as mazabuilder
 
 ENV BITCOIN_VERSION=0.10.2
 ENV BITCOIN_PREFIX=/opt/maza-${BITCOIN_VERSION}

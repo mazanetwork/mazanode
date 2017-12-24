@@ -4,7 +4,7 @@ services:
     build:
       context: ./iquidus
       dockerfile: Dockerfile.iquidus
-    image: doc.guruvan.net/guruvan/iquidus:latest
+    image: maza/mazanode-iquidus:latest
     env_file:
        - ./iquidus/iquidus.env
        - ./mongodb/mongodb.env
@@ -25,23 +25,25 @@ services:
       dockerfile: Dockerfile.mongodb
     env_file:
       - ./mongodb/mongodb.env
-    image: doc.guruvan.net/guruvan/mongodb:latest
+    image: maza/mazanode-mongodb:latest
     links:
       - mazad:mazad 
     volumes:
       - ./mongodb-data:/data
       - ./mongodb/mongod.conf:/etc/mongod.conf
   mazad:
-    image: doc.guruvan.net/guruvan/mazad:latest
+    image: maza/mazanode-mazad:latest
     volumes:
       - ./mazad/.maza:/home/maza/.maza
     ports:
       - 12835:12835
-      - 12832:12832
     command:
       - "-conf=/home/maza/.maza/maza.conf"
   tateserver:
-    image: doc.guruvan.net/guruvan/tateserver:latest
+    build: 
+      context: ./tateserver
+      dockerfile: Dockerfile.tateserver
+    image: maza/mazanode-tateserver:latest
     depends_on:
       - mazad
     ports:
