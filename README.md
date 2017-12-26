@@ -25,6 +25,14 @@ A public hostname in some domain is required to provide webservices
 A public IP address is required for electruMAZA service and IPFS
 You may need to forward ports into your router for correct operation, see PORTS
 
+## Security Notes
+
+Mongodb password is currently set for user iquidus on the iquidus database in mongodb
+Database will continue to ship with this preset user/password, but an update will be provided that will contain scripts to reset this locally. 
+
+Mongodb is currently accessed over a TCP connection - this port need not be exposed outside the docker network that is configured for this project (via docker-compose)  - A Future update will have iquidus and mongodb communicating over a unix domain socket rather than TCP. 
+
+
 
 ## Hostname, DNS, SSL
 
